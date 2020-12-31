@@ -6,10 +6,6 @@ var homePageSection = document.querySelector('.home-view');
 var formViewSection = document.querySelector('.form-view');
 var savedCoverSection = document.querySelector('.saved-covers-section');
 var savedViewSection = document.querySelector('.saved-view ');
-var userCover = document.querySelector('#cover');
-var userTitle = document.querySelector('#title');
-var userDesc1 = document.querySelector('#descriptor1');
-var userDesc2 = document.querySelector('#descriptor2');
 var homeButton = document.querySelector('.home-button');
 var randomCoverButton = document.querySelector('.random-cover-button');
 var saveCoverButton = document.querySelector('.save-cover-button');
@@ -34,6 +30,7 @@ function getRandomIndex(array) {
   return Math.floor(Math.random() * array.length);
 }
 function generateCover(cover, title, tagline1, tagline2) {
+  currentCover = new Cover(cover, title, tagline1, tagline2)
   newCoverImage.src = cover;
   newTitle.innerText = title;
   newTaglineOne.innerText = tagline1;
@@ -48,31 +45,42 @@ function loadHomePage() {
   );
 }
 function createRandomCover() {
-  currentCover = new Cover(loadHomePage());
+  loadHomePage();
+}
+function addHidden(arr) {
+  for (var i=0; i<arr.length; i++) {
+    arr[i].classList.add('hidden')
+  }
+}
+function removeHidden(arr) {
+  for (var i=0; i<arr.length; i++) {
+    arr[i].classList.remove('hidden')
+  }
 }
 function createNewCover() {
-  homeButton.classList.remove('hidden');
-  homePageSection.classList.add('hidden');
-  randomCoverButton.classList.add('hidden');
-  saveCoverButton.classList.add('hidden');
-  savedViewSection.classList.add('hidden');
-  formViewSection.classList.remove('hidden');
+  var showList = [homeButton,formViewSection];
+  var hideList = [homePageSection,randomCoverButton,saveCoverButton,savedViewSection];
+  addHidden(hideList);
+  removeHidden(showList);
 }
 function viewSavedCovers() {
-  createNewCover();
-  savedViewSection.classList.toggle('hidden');
-  formViewSection.classList.toggle('hidden');
+  var showList = [homeButton,savedViewSection];
+  var hideList = [formViewSection,homePageSection,randomCoverButton,saveCoverButton];
+  addHidden(hideList);
+  removeHidden(showList);
 }
 function showHomeCover() {
-  homeButton.classList.add('hidden');
-  homePageSection.classList.remove('hidden');
-  randomCoverButton.classList.remove('hidden');
-  saveCoverButton.classList.remove('hidden');
-  savedViewSection.classList.add('hidden');
-  formViewSection.classList.add('hidden');
+  var showList = [homePageSection,randomCoverButton,saveCoverButton];
+  var hideList = [homeButton,savedViewSection,formViewSection];
+  addHidden(hideList);
+  removeHidden(showList);
 }
 function storeUserData() {
   event.preventDefault();
+  var userCover = document.querySelector('#cover');
+  var userTitle = document.querySelector('#title');
+  var userDesc1 = document.querySelector('#descriptor1');
+  var userDesc2 = document.querySelector('#descriptor2');
   currentCover = new Cover (userCover.value, userTitle.value, userDesc1.value, userDesc2.value);
   covers.push(userCover.value);
   titles.push(userTitle.value);
@@ -82,25 +90,8 @@ function storeUserData() {
   generateCover(currentCover.cover, currentCover.title, currentCover.tagline1, currentCover.tagline2);
 }
 function saveCover() {
-  currentCover = new Cover(newCoverImage.src, newTitle.innerText, newTaglineOne.innerText, newTaglineTwo.innerText);
-  var allCovers = [];
-  var allTitles = [];
-  var tagLineOne = [];
-  var tagLineTwo = [];
-  for (var i=0; i<savedCovers.length; i++) {
-    allCovers.push(savedCovers[i].cover);
-    allTitles.push(savedCovers[i].title);
-    tagLineOne.push(savedCovers[i].tagline1);
-    tagLineTwo.push(savedCovers[i].tagline2);
-  }
-  if (allCovers.includes(currentCover.cover) === false) {
-    savedCovers.push(currentCover);
-  } else if (allTitles.includes(currentCover.title) === false) {
-    savedCovers.push(currentCover);
-  } else if (tagLineOne.includes(currentCover.tagline1) === false) {
-    savedCovers.push(currentCover);
-  } else if (tagLineTwo.includes(currentCover.tagline2) === false) {
-    savedCovers.push(currentCover);
+  if (!savedCovers.includes(currentCover)) {
+    savedCovers.push(currentCover)
   }
 }
 function displaySavedCovers() {
